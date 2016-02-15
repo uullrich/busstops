@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MyBlog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style type="text/css">
+      #map{ width:700px; height: 500px; }
+    </style>
+    
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-theme.min.css"/> 
+
+    <script src="../js/lib/jquery.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+    <script data-main="../js/config/allBusstopsConfig" src="../js/lib/require.js"></script>
+</head>
+<body>
+    <div class="container" style="margin-top:10px;">
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="#">MyStations</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/">All Busstops</a></li>
+                <li><a href="/new">Add Busstop</a></li>
+            </ul>
+          </div>
+        </nav>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="map"></div>    
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="status"></div>    
+            </div>
+        </div>
+    </div>
+</body>
+</html>
