@@ -1,8 +1,9 @@
 
 //Set up some of our variables.
 var map; //Will contain map object.
-var marker = false; ////Has the user plotted their location marker? 
-        
+var marker = false; //Marker already placed in the map?
+var busstations = []; //All busstations in range
+
 //Function called to initialize / create the map.
 //This is called when the page has loaded.
 function initMap() {
@@ -13,7 +14,7 @@ function initMap() {
     //Map options.
     var options = {
       center: centerOfMap, //Set center.
-      zoom: 7 //The zoom value.
+      zoom: 10 //The zoom value.
     };
 
     //Create the map object.
@@ -45,19 +46,28 @@ function initMap() {
     });
 
 }
-
-var busstations = [];
       
 function markLocationsInRange(){
     var selectedLocation = marker.getPosition();
     var selectedLat = selectedLocation.lat();
     var selectedLng = selectedLocation.lng();
-    
-    var jqxhr = $.get('/busstop/' + selectedLat + '/' + selectedLng + '/' + 10000).done(function(locations) {
-        removeAllMarkers();
+    var radius = Number($("#radius").val());
+
+    $('#request').html("Last request: " + '/busstop/' + selectedLat + '/' + selectedLng + '/' + radius);
+
+    var jqxhr = $.get('/busstop/' + selectedLat + '/' + selectedLng + '/' + radius).done(function(locations) {
         
+        removeAllMarkers();
+        removeAllBusstopsFromTable();
+        
+        $("#status").html("");
+
         locations.map(function(loc){
+            
+            addBusstopToTable(loc.name, loc.distance);
+
             var latLngRaw = loc.geolocation;
+            
             //Do casting for the google api - needs to be in number
             var latLng = {
                 lat: Number(latLngRaw.lat), 
@@ -72,15 +82,24 @@ function markLocationsInRange(){
             });
 
             busstations.push(marker);
+
             //Listen for click events
             google.maps.event.addListener(marker, 'click', function() { 
                 alert("I am marker " + marker.id); 
             }); 
 	   });
        
-    }).fail(function() {
-        console.log("Webservice problem!");
-        $("#status").html("Webservice problem!");
+    }).fail(function(error) {
+        
+        removeAllMarkers();
+        removeAllBusstopsFromTable();
+
+        if(error.status === 404){
+            $("#status").html("No busstop in range");
+        }else{
+            console.log("Webservice problem!");
+            $("#status").html("Webservice problem: " + error.status);
+        }
     });
 }
        
@@ -90,7 +109,16 @@ function removeAllMarkers(){
     });
     
     busstations = [];
-}       
+
+}  
+
+function removeAllBusstopsFromTable(){
+    $("#addbusstop > tbody").html("");
+}
+
+function addBusstopToTable(name, distance){
+    $("#addbusstop > tbody").append('<tr><td>' + name + '</td><td>' + distance + '</td></tr>');
+}
         
 //Load the map when the page has finished loading.
 google.maps.event.addDomListener(window, 'load', initMap);
