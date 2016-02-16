@@ -1,0 +1,26 @@
+{
+  "name": "busstops",
+  "version": "1.0.0",
+  "description": "Demo of my skills",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "ejs": "^2.4.1",
+    "mongoose": "^4.4.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uullrich/busstops.git"
+  },
+  "author": "Uwe Ullrich",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/uullrich/busstops/issues"
+  },
+  "homepage": "https://github.com/uullrich/busstops#readme"
+}

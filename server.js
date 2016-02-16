@@ -3,6 +3,7 @@ var express = require('express'),
     http = require('http'),
 	path = require('path'),
 	mongoose = require('mongoose'),
+    geolib = require('geolib'),
     /* Models */
 	Busnumber = require('./models/Busnumber'),
     Busstop = require('./models/Busstop'),
@@ -67,6 +68,54 @@ app.get("/busstop", (req, res) => {
         }
     });
     
+});
+
+app.get("/range", (req, res) => {
+    res.render('inRangeBusstop', {});
+});
+
+app.get("/busstop/:selectedLat/:selectedLng/:meter", (req, res) => {
+/*  
+    // checks if 51.525, 7.4575 is within a radius of 5km from 51.5175, 7.4678
+geolib.isPointInCircle(
+	{latitude: 51.525, longitude: 7.4575},
+	{latitude: 51.5175, longitude: 7.4678},
+	5000
+);
+*/
+    Busstop.find((err, busstops) => {
+        if (err) {
+            res.send(500, 'Error!');
+        }else {
+            var busstopsInRange = [];
+            
+            busstops.map((busstop) => {
+                var isInRange = geolib.isPointInCircle(
+                {
+                    latitude: busstop.geolocation.lat, longitude: busstop.geolocation.lng
+                },
+                {
+                    latitude: req.params.selectedLat, longitude: req.params.selectedLng
+                },
+                Number(req.params.meter) //Radius in meter
+                );
+                
+                if(isInRange){
+                    busstopsInRange.push(busstop);
+                    console.log("Not in Range")
+                }else{
+                    console.log("In Range")
+                }                       
+            });
+            
+            console.log("SizeOfBusstopsInRange: " + busstopsInRange.length);
+            if(busstopsInRange.length === 0){
+                res.status(404).status("Not found");
+            }else{
+                res.json(busstopsInRange);
+            }
+        }
+    });
 });
 
 app.get("/busstop/:id", (req, res) => {
