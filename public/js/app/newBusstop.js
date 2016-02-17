@@ -1,4 +1,4 @@
-define(['jquery', 'newBusstopMap'], function($, map){
+define(['jquery', 'newBusstopMap', 'bootstrap', 'timepicker'], function($, map, bootstrap, timepicker){
 	var NewBusstopUILogic = {
     	
     	busnumbers: [],
@@ -56,6 +56,10 @@ define(['jquery', 'newBusstopMap'], function($, map){
 
     		return false;
     	},
+        
+        initTimepickers: function(){
+            $(".timepicker").timepicker();
+        },
 
     	init: function(){
 			NewBusstopUILogic.addBusnumber();

@@ -6,7 +6,8 @@ requirejs.config({
         bootstrap : './js/lib/bootstrap.min',
         allBusstopsMap: './js/app/allBusstopsMap',
         newBusstopMap: './js/app/newBusstopMap',
-        inRangeBusstopMap: './js/app/inRangeBusstopMap'
+        inRangeBusstopMap: './js/app/inRangeBusstopMap',
+        timepicker: './js/lib/jquery.timepicker.min.js'
     },
 
     shims: {
