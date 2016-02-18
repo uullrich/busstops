@@ -33,6 +33,8 @@ function initMap() {
                 draggable: true //make it draggable
             });
 
+            marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
+
             //Listen for drag events!
             google.maps.event.addListener(marker, 'dragend', function(event){
                 markLocationsInRange();

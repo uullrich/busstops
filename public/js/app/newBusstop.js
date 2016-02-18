@@ -1,7 +1,9 @@
-define(['jquery', 'newBusstopMap', 'bootstrap', 'timepicker'], function($, map, bootstrap, timepicker){
+define(['jquery', 'newBusstopMap', 'bootstrap', 'timepicker', 'moment'], function($, map, bootstrap, timepicker, moment){
 	var NewBusstopUILogic = {
     	
     	busnumbers: [],
+        
+        selectedBusnumber: {},
 
     	addBusnumber: function(){
 			$("#newBusnumberButton").click(function(e){
@@ -57,12 +59,37 @@ define(['jquery', 'newBusstopMap', 'bootstrap', 'timepicker'], function($, map, 
     		return false;
     	},
         
+        addDepartureTime: function(){
+            $("#addTime").click(function(e) {
+                e.preventDefault();                
+                //alert("Timepicker value: " +  + " moment " + moment());
+              
+                var departureTimeInDateFormat = moment($(".timepicker").val(), ['h:m a', 'H:m']).toDate();
+                console.log(departureTimeInDateFormat);  
+                             
+                NewBusstopUILogic.busnumbers.map(function(busnumbers){
+                    if(busnumbers.line === NewBusstopUILogic.selectedBusnumber.line){
+                        busnumbers.departure.push(departureTimeInDateFormat);
+                    }
+                });
+                
+                NewBusstopUILogic.appendNewDeparterTime();
+                return false;
+            })  
+        },
+        
+        appendNewDeparterTime: function(){
+              
+        },
+        
         initTimepickers: function(){
             $(".timepicker").timepicker();
         },
 
     	init: function(){
 			NewBusstopUILogic.addBusnumber();
+            NewBusstopUILogic.addDepartureTime();
+            NewBusstopUILogic.initTimepickers();
     	}
     }
 
