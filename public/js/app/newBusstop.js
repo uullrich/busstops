@@ -6,6 +6,36 @@ define(['jquery', 'newBusstopMap', 'bootstrap', 'timepicker', 'moment'], functio
         
         selectedBusnumber: {},
 
+        addBusstop: function name() {
+            var addBusstopLogic = function () {
+                var gelocation = {
+                    lat: $("#lat").val(),
+                    lng: $("#lng").val()
+                }
+                
+                var busstopName = $("#busstopName").val();
+                
+                if(busstopName !== "" && marker !== false){
+                    var busstop = {
+                        name: busstopName,
+                        geolocation: gelocation,
+                        busnumber: NewBusstopUILogic.busnumbers 
+                    };
+                    
+                    $.post("addBusstop", busstop).done(function(data) {
+                        window.location = "/";
+                    });
+                }else{
+                    alert("Please insert a busstopname and set a marker!");
+                }
+            }
+            
+            $("#saveBusstop").off("click").on("click", function(e){
+                e.preventDefault();
+                addBusstopLogic();
+            });
+        },
+
     	addBusnumber: function(){
 			
             //Logic for creating a new busnumber
@@ -138,6 +168,7 @@ define(['jquery', 'newBusstopMap', 'bootstrap', 'timepicker', 'moment'], functio
     	init: function(){
             NewBusstopUILogic.selectBuslineInit();
 			NewBusstopUILogic.addBusnumber();
+            NewBusstopUILogic.addBusstop();
             NewBusstopUILogic.addDepartureTime();
             NewBusstopUILogic.initTimepickers(); 
     	}

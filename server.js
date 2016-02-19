@@ -143,16 +143,19 @@ app.get("/new", (req, res) => {
 */
 app.post("/addBusstop", (req, res) => {
 
+/*
     //Create models for a busstop
     var geolocation = new Geolocation({
-        lat: req.body.lat,
-        lng: req.body.lng
+        lat: req.body.geolocation.lat,
+        lng: req.body.geolocation.lng
     });
+
 
     var busnumber = new Busnumber({
         line: "178",
         departure: Date.now()
     });
+
 
     var busstop = new Busstop({
         name: req.body.name
@@ -161,14 +164,18 @@ app.post("/addBusstop", (req, res) => {
     busstop.geolocation = geolocation;
 
     busstop.busnumber.push(busnumber);
-
+*/
+    var busstopJSON = req.body;
+    
+    var bustopModel = new Busstop(busstopJSON);
+    
     //Save the model
-    busstop.save((err, model) => {
+    bustopModel.save((err, model) => {
         if (err) {
             res.status(500).send('Error!');
         }else {
             //Redirect to the "All Busstops" page
-            res.redirect('/');
+            res.status(200).send('Success!');
             console.log("Busstop created successfully with name: " + req.body.name);
         }
     });
