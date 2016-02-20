@@ -53,7 +53,7 @@
                             <input type="text" name="lng" id="lng" readonly="yes" style="display: none;">
                         </div>
                         <div class="col-md-4">
-                            <label>Busnumbers</label>
+                            <label>Busnumber administration</label>
                             </br>
                             <button type="submit" class="btn btn-default" id="newBusnumberButton">New Busnumber</button>
                             <div class="newBusnumberWraper" style="display: none;">
@@ -66,21 +66,37 @@
                             </div>
                             </br>
                             </br>
-                            <label>Bus departure times</label>
-                            </br>
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Select a busnumber
-                                <span class="caret"></span></button>
-                                <ul class="dropdown-menu busnumberList">
+                            <div id="stepOne" style="display: none;">
+                                <label>Bus departure times</label>
+                                </br>
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Select a busnumber
+                                    <span class="caret"></span></button>
+                                    <ul class="dropdown-menu busnumberList">
 
-                                </ul>
-                            </div>                        
-                            </br>
-                            <label>Add departure time for&nbsp;</label><label id="selectedLineLabel"></label>
-                            <div class="departureTimes">
-                                <input class="timepicker" type="text"/>
-                                <button type="submit" class="btn btn-default btn-xs" id="addTime">+</button>    
-                            </div>
+                                    </ul>
+                                </div>                        
+                                </br>
+                                <div id="stepTwo" style="display: none;">
+                                    <label>Add departure time for:&nbsp;</label><label class="selectedLineLabel"></label>
+                                    <div class="departureTimes">
+                                        <input class="timepicker" type="text"/>
+                                        <button type="submit" class="btn btn-default btn-xs" id="addTime">+</button>    
+                                    </div>
+                                    </br>
+                                    <table class="table table-striped" id="departureTimes" style="width: 200px;">
+                                    <thead>
+                                      <tr>
+                                        <th>Departure times for:&nbsp;<label class="selectedLineLabel"></label></th>
+
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                  </table>
+                              </div>
+                          </div>
                         </div>
                     </div>
                 </form>

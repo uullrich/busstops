@@ -51,6 +51,8 @@ define(['jquery', 'newBusstopMap', 'bootstrap', 'timepicker', 'moment'], functio
                     $("#newBusnumberButton").show();
                     
                     if(!NewBusstopUILogic.containsBusnumber(newBusnumber)){
+                        $("#stepOne").show();
+
                         $(".busnumberList").append('<li><a href="#">' + newBusnumber + '</a></li>');
                         NewBusstopUILogic.selectBuslineInit();
 
@@ -113,12 +115,33 @@ define(['jquery', 'newBusstopMap', 'bootstrap', 'timepicker', 'moment'], functio
                 NewBusstopUILogic.busnumbers.map(function(busnumber){
                     if(busnumber.line === selected){
                         NewBusstopUILogic.selectedBusnumber = busnumber;
+                        $("#stepTwo").show();
                     }
                 });
 
-                $("#selectedLineLabel").html(NewBusstopUILogic.selectedBusnumber.line);
+                $(".selectedLineLabel").html(NewBusstopUILogic.selectedBusnumber.line);
+
+                //Clear departure times table
+                $("#departureTimes tbody").html("");
+
+                //Load times from selected busnumber into table
+                NewBusstopUILogic.selectedBusnumber.departure.map(function(departureTimeInDateFormat){
+                    var departureTimeInString = moment(departureTimeInDateFormat).format("h:mm a");
+
+                    $("#departureTimes tbody").append("<tr><td>" + departureTimeInString + "</td></tr>");
+                });
+
+
                 //console.log("Selected" + NewBusstopUILogic.selectedBusnumber.line);
             });
+        },
+
+        isBusnumberSelected: function(){
+            if(typeof selectedBusnumber.line === "undefined"){
+                return false;
+            }else{
+                return true;
+            }
         },
 
         addDepartureTime: function(){
@@ -128,16 +151,20 @@ define(['jquery', 'newBusstopMap', 'bootstrap', 'timepicker', 'moment'], functio
                                
                 //alert("Timepicker value: " +  + " moment " + moment());
               
-                var departureTimeInDateFormat = moment($(".timepicker").val(), ['h:m a', 'H:m']).toDate();
+                var departureTimeInDateFormat = moment($(".timepicker").val(), ['h:m a', 'H:m']).toDate();                
+                var departureTimeInString = moment(departureTimeInDateFormat).format("h:mm a");
+
                 console.log(departureTimeInDateFormat);  
-                             
+                console.log(departureTimeInString); 
+
                 NewBusstopUILogic.busnumbers.map(function(busnumbers){
                     if(busnumbers.line === NewBusstopUILogic.selectedBusnumber.line){
+                        
+                        $("#departureTimes tbody").append("<tr><td>" + departureTimeInString + "</td></tr>");
                         busnumbers.departure.push(departureTimeInDateFormat);
                     }
                 });
                 
-                NewBusstopUILogic.appendNewDeparterTime();
             }
 
             //Eventhandlers
@@ -155,10 +182,6 @@ define(['jquery', 'newBusstopMap', 'bootstrap', 'timepicker', 'moment'], functio
                 addDepartureTimeLogic();
                 return false;
             });  
-        },
-        
-        appendNewDeparterTime: function(){
-              
         },
 
         initTimepickers: function(){
