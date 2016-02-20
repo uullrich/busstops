@@ -1,4 +1,4 @@
-define(['jquery', 'allBusstopsMap'], function($, map){
+define(['jquery', 'allBusstopsMap', 'moment'], function($, map, moment){
 	
     var AllBusstopsUILogic = {
     	

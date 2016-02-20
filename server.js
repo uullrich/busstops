@@ -128,7 +128,50 @@ app.get("/busstop/:selectedLat/:selectedLng/:meter", (req, res) => {
  * Returns details to a specific busstop.
 */
 app.get("/busstop/:id", (req, res) => {
-    //TODO Implement
+    
+    Busstop.findById(req.params.id, (err, busstop) => {
+        if (err) {
+            //Something went wrong with the db
+            res.status(500).send('Error!');
+        }else {
+            res.status(200).json(busstop);
+        }
+    });
+});
+
+/*
+ * Returns a busnumber of a busstop
+*/
+app.get("/busstop/:busstopid/:busnumberid", (req, res) => {
+    
+    Busstop.findById(req.params.busstopid, (err, busstop) => {
+        if (err) {
+            //Something went wrong with the db
+            res.status(500).send('Error!');
+        }else {
+            var busnumber = null;
+
+            //Search for busnumber with the matching id
+            busstop.busnumber.map(function(busnr){
+                if(busnr._id.equals(req.params.busnumberid)){
+                    busnumber = busnr;
+                }
+            });            
+
+            if(busnumber === null){
+               res.status(404).send("Not found!"); 
+            }else{
+                res.status(200).json(busnumber);
+            }        
+        }
+    });
+});
+
+/*
+ * Deletes a busstop with the passed id.
+*/
+app.delete("busstop/:id", (req, res) => {
+
 });
 
 /*

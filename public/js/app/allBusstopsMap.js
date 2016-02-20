@@ -40,9 +40,59 @@ function markLocations(locations){
 
         //Listen for click events
 	    google.maps.event.addListener(marker, 'click', function() { 
-	       alert("I am marker " + marker.id); 
+	       //alert("I am marker " + marker.id); 
+			fetchBusstopById(marker.id);
 	    }); 
 	});
+}
+
+function fetchBusstopById(id){
+	var jqxhr = $.get("/busstop/" + id).done(function(busstop) {
+		
+		//Clear lists of Busnumbers
+		$("#busnumbers tbody").html("");
+
+		//Insert all busnumbers of a station
+		busstop.busnumber.map(function(busnumber){
+			$("#busnumbers tbody").append('<tr><td><div class="busnumberSelector" rel="' + busnumber._id + '">' + busnumber.line + '</div></td></tr>');
+		});
+
+		//Set selected busstopname
+		$("#busstopname").html(busstop.name);
+		$("#busstopname").attr('rel', busstop._id);
+		
+		selectBusnumberInit();
+	}).fail(function() {
+		console.log("Webservice problem!");
+		$("#status").html("Webservice problem!");
+	});
+}
+
+function selectBusnumberInit(){
+
+    var selectBusnumberLogic = function(busnumberid){        
+
+        var jqxhr = $.get("/busstop/" + $("#busstopname").attr("rel") + "/" + busnumberid).done(function(busnumber) {
+            
+            busnumber.departure.map(function(departureTimeInDateFormat){
+            	var departureTimeInString = moment(departureTimeInDateFormat).format("h:mm a");
+
+            	$("#departureTimes tbody").html("");
+            	$("#departureTimes tbody").append("<tr><td>" + departureTimeInString + "</td></tr>");
+            });
+
+        }).fail(function() {
+            console.log("Webservice problem!");
+            $("#status").html("Webservice problem!");
+        });
+
+    };
+
+    $(".busnumberSelector").off("click").on("click", function(e){
+        e.preventDefault();
+        selectBusnumberLogic($(this).attr("rel"));
+    });
+    
 }
         
 //Load the map when the page has finished loading.
