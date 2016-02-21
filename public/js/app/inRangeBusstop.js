@@ -8,8 +8,11 @@ define(['jquery', 'inRangeBusstopMap'], function($, map){
     }
 
     // DOM ready
-    $(function(){
-    	InRangeBusstopUILogic.init();
+    $(function(){	
+        setTimeout(function(){
+            initMap();
+            InRangeBusstopUILogic.init();
+        }, 1000);
     });
 
     return InRangeBusstopUILogic;

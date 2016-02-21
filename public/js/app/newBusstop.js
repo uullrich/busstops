@@ -199,6 +199,9 @@ define(['jquery', 'newBusstopMap', 'bootstrap', 'timepicker', 'moment'], functio
 
     // DOM ready
     $(function(){
-    	NewBusstopUILogic.init();
+        setTimeout(function(){
+            initMap();
+            NewBusstopUILogic.init();
+        }, 1000);
     });
 });
