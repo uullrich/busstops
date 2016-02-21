@@ -88,7 +88,7 @@ function markLocationsInRange(){
 
             //Listen for click events
             google.maps.event.addListener(marker, 'click', function() { 
-                alert("I am marker " + marker.id); 
+                //alert("I am marker " + marker.id); 
             }); 
 	   });
        

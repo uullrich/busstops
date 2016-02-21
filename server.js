@@ -2,12 +2,7 @@ var express = require('express'),
     bodyParser = require('body-parser');
     http = require('http'),
     path = require('path'),
-    mongoose = require('mongoose'),
-    geolib = require('geolib'),
-    /* Models */
-    Busnumber = require('./models/Busnumber'),
-    Busstop = require('./models/Busstop'),
-    Geolocation = require('./models/Geolocation');
+    busstopApi = require('./apis/busstopAPI');
 
 var app = express();
 
@@ -34,14 +29,11 @@ app.get("/", (req, res) => {
  * Returns all busstops from the database
 */
 app.get("/busstop", (req, res) => {
-    Busstop.find((err, busstops) => {
-        if (err) {
-            res.status(500).send('Error!');
-        }else {
-            res.json(busstops);
-        }
+
+    busstopApi.getBusstops((busstops) => {
+        res.json(busstops);
     });
-    
+
 });
 
 /*
@@ -56,70 +48,17 @@ app.get("/range", (req, res) => {
  * Every busstop in range contains the distance to the passed location. 
 */
 app.get("/busstop/:selectedLat/:selectedLng/:meter", (req, res) => {
+    
+    var selectedLat = req.params.selectedLat;
+    var selectedLng = req.params.selectedLng;
+    var meter = req.params.meter;
 
-    Busstop.find((err, busstops) => {
-        if (err) {
-            //Something went wrong with the db
-            res.status(500).send('Error!');
-
-        }else {
-            var busstopsInRange = [];
-            
-            //Iterate over all busstops
-            busstops.map((busstop) => {
-
-                //Check wheter the passed location is in range of the current iterated busstop
-                var isInRange = geolib.isPointInCircle(
-                    {
-                        latitude: Number(busstop.geolocation.lat), longitude: Number(busstop.geolocation.lng)
-                    },
-                    {
-                        latitude: Number(req.params.selectedLat), longitude: Number(req.params.selectedLng)
-                    },
-                    Number(req.params.meter) //Radius in meter
-                    );
-                
-
-                if(isInRange){
-
-                    //Calculate distance
-                    var distance = geolib.getDistance(
-                    {
-                        latitude: Number(busstop.geolocation.lat), longitude: Number(busstop.geolocation.lng)
-                    },
-                    {
-                        latitude: Number(req.params.selectedLat), longitude: Number(req.params.selectedLng)
-                    });
-                    
-                    //Needs to be converted due to a additional attribute (a model cant just be extended)
-                    var busstopJSON = {
-                        name: busstop.name,
-                        geolocation: {
-                            lat: busstop.geolocation.lat,
-                            lng: busstop.geolocation.lng
-                        },
-                        busnumber: busstop.busnumber
-                    }
-
-                    busstopJSON.distance = distance;
-
-                    //Push to busstops in range
-                    busstopsInRange.push(busstopJSON);
-
-                    console.log("In Range with distance: " + distance);
-                }else{
-                    console.log("Not in Range");
-                }                       
-            });
-            
-            //console.log("SizeOfBusstopsInRange: " + busstopsInRange.length);
-
-            //Check whether there are busstops in range
-            if(busstopsInRange.length === 0){
-                res.status(404).send("Not found");
-            }else{
-                res.json(busstopsInRange);
-            }
+    busstopApi.getBusstopsNearLocation(selectedLat, selectedLng, meter, (busstopsInRange) => {
+        //Check whether there are busstops in range
+        if(busstopsInRange.length === 0){
+            res.status(404).send("Not found");
+        }else{
+            res.json(busstopsInRange);
         }
     });
 });
@@ -128,42 +67,27 @@ app.get("/busstop/:selectedLat/:selectedLng/:meter", (req, res) => {
  * Returns details to a specific busstop.
 */
 app.get("/busstop/:id", (req, res) => {
-    
-    Busstop.findById(req.params.id, (err, busstop) => {
-        if (err) {
-            //Something went wrong with the db
-            res.status(500).send('Error!');
-        }else {
-            res.status(200).json(busstop);
-        }
+
+    busstopApi.getBusstopById(req.params.id, (busstop) => {
+        res.status(200).json(busstop);
     });
+
 });
 
 /*
  * Returns a busnumber of a busstop
 */
 app.get("/busstop/:busstopid/:busnumberid", (req, res) => {
-    
-    Busstop.findById(req.params.busstopid, (err, busstop) => {
-        if (err) {
-            //Something went wrong with the db
-            res.status(500).send('Error!');
-        }else {
-            var busnumber = null;
 
-            //Search for busnumber with the matching id
-            busstop.busnumber.map(function(busnr){
-                if(busnr._id.equals(req.params.busnumberid)){
-                    busnumber = busnr;
-                }
-            });            
+    var busstopId = req.params.busstopid;
+    var busnumberId = req.params.busnumberid;
 
-            if(busnumber === null){
-               res.status(404).send("Not found!"); 
-            }else{
-                res.status(200).json(busnumber);
-            }        
-        }
+    busstopApi.getBusnumberById(busstopId, busnumberId, (busnumber) => {
+        if(busnumber === null){
+           res.status(404).send("Not found!"); 
+        }else{
+            res.status(200).json(busnumber);
+        } 
     });
 });
 
@@ -186,41 +110,12 @@ app.get("/new", (req, res) => {
 */
 app.post("/addBusstop", (req, res) => {
 
-/*
-    //Create models for a busstop
-    var geolocation = new Geolocation({
-        lat: req.body.geolocation.lat,
-        lng: req.body.geolocation.lng
-    });
-
-
-    var busnumber = new Busnumber({
-        line: "178",
-        departure: Date.now()
-    });
-
-
-    var busstop = new Busstop({
-        name: req.body.name
-    });
-
-    busstop.geolocation = geolocation;
-
-    busstop.busnumber.push(busnumber);
-*/
     var busstopJSON = req.body;
-    
-    var bustopModel = new Busstop(busstopJSON);
-    
-    //Save the model
-    bustopModel.save((err, model) => {
-        if (err) {
-            res.status(500).send('Error!');
-        }else {
-            //Redirect to the "All Busstops" page
-            res.status(200).send('Success!');
-            console.log("Busstop created successfully with name: " + req.body.name);
-        }
+
+    busstopApi.createBusstop(busstopJSON, (error) => {
+        res.status(500).send('Error!');
+    }, (success) => {
+        res.status(200).send('Success!');
     });
 });
 
