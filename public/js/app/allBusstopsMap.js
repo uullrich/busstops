@@ -35,7 +35,8 @@ function markLocations(locations){
 			position: latLng,
 			map: map,
 			title: loc.name,
-			id: loc._id
+			id: loc._id,
+			icon: "../img/busstop32.png"
 		});
 
         //Listen for click events
@@ -55,11 +56,16 @@ function fetchBusstopById(id){
 		//Insert all busnumbers of a station
 		busstop.busnumber.map(function(busnumber){
 			$("#busnumbers tbody").append('<tr><td><div class="busnumberSelector" rel="' + busnumber._id + '">' + busnumber.line + '</div></td></tr>');
+			$(".busnumberSelector").css("cursor", "pointer");
 		});
 
 		//Set selected busstopname
 		$("#busstopname").html(busstop.name);
 		$("#busstopname").attr('rel', busstop._id);
+		
+		//Clear departure times table and reset selected busnumber
+		$("#departureTimes tbody").html("");
+		$("#bussnumber").html("(select a busnumber)");
 		
 		selectBusnumberInit();
 	}).fail(function() {
@@ -70,14 +76,17 @@ function fetchBusstopById(id){
 
 function selectBusnumberInit(){
 
-    var selectBusnumberLogic = function(busnumberid){        
+    var selectBusnumberLogic = function(busnumber, busnumberid){        
+    	$("#bussnumber").html(busnumber);
 
         var jqxhr = $.get("/busstop/" + $("#busstopname").attr("rel") + "/" + busnumberid).done(function(busnumber) {
-            
+
+			$("#departureTimes tbody").html("");
+
+            //Set all departure times from the selected bussnumber into the table
             busnumber.departure.map(function(departureTimeInDateFormat){
             	var departureTimeInString = moment(departureTimeInDateFormat).format("h:mm a");
-
-            	$("#departureTimes tbody").html("");
+            	
             	$("#departureTimes tbody").append("<tr><td>" + departureTimeInString + "</td></tr>");
             });
 
@@ -90,7 +99,7 @@ function selectBusnumberInit(){
 
     $(".busnumberSelector").off("click").on("click", function(e){
         e.preventDefault();
-        selectBusnumberLogic($(this).attr("rel"));
+        selectBusnumberLogic($(this).html(), $(this).attr("rel"));
     });
     
 }

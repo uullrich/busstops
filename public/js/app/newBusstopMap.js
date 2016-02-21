@@ -69,7 +69,8 @@ function markLocations(locations){
 			position: latLng,
 			map: map,
 			title: loc.name,
-			id: loc._id
+			id: loc._id,
+            icon: "../img/busstop32.png"
 		});
 
         //Listen for click events
