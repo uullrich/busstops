@@ -21,8 +21,11 @@ define(['jquery', 'allBusstopsMap', 'moment'], function($, map, moment){
     }
 
     // DOM ready
-    $(function(){
-    	AllBusstopsUILogic.init();
+    $(function(){	
+        setTimeout(function(){
+            initMap();
+            AllBusstopsUILogic.init();
+        }, 1000);
     });
 
     return AllBusstopsUILogic;
