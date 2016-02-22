@@ -1,3 +1,3 @@
 Installation
 
--> Clone it and just do a npm install!
+-> Clone it and just do a **npm install**
